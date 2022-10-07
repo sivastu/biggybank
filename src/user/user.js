@@ -12,6 +12,53 @@ app.post("/login", async (req, res) => {
     //parameter    name,email,phone,pic,password
 
     let phone = req.body.phone
+    let password = req.body.password
+    
+    let otp = Math.random().toString().substr(2, 6)
+
+    if( phone === '' || phone === undefined){
+        res.json({
+            "status" : false,
+            "message" : 'Insert Phone no'
+        })
+        return
+    }
+    
+    if( password === '' || password === undefined){
+        res.json({
+            "status" : false,
+            "message" : 'Insert Phone no'
+        })
+        return
+    }
+
+    Register.findOne({phone:phone})
+    .then(async (respo)=>{
+        if(respo){
+            await Login.updateOne({phone:phone},{otp:otp})
+            .then((resss)=>{
+                res.json({
+                    "status" : true,
+                    "message" : 'Otp',
+                    "otp" : otp
+                })
+            })
+            .catch((err)=>{
+                res.json({
+                    "status" : false,
+                    "message" : "something went wrong"
+                })
+            })
+            return
+        }
+    })
+})
+
+app.post("/register", async (req, res) => {
+
+    //parameter    name,email,phone,pic,password
+
+    let phone = req.body.phone
     let name = req.body.name
     let email = req.body.email
     let pic = req.body.pic
@@ -53,20 +100,6 @@ app.post("/login", async (req, res) => {
         })
         return
     }
-
-    Register.findOne({phone:phone})
-    .then(async (respo)=>{
-        if(respo){
-            await Login.updateOne({phone:phone},{otp:otp})
-            .then((resss)=>{
-                res.json({
-                    "status" : true,
-                    "message" : 'Otp',
-                    "otp" : otp
-                })
-            })
-            return
-        }
         const one =  new Register({
             phone : phone,
             otp : otp,
@@ -89,7 +122,6 @@ app.post("/login", async (req, res) => {
                 "message" : "something went wrong"
             })
         })
-    })
 })
 
 app.post("/otp", async (req, res) => {
